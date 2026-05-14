@@ -3,9 +3,6 @@ set -e
 
 BUSYBOX_BIN="/opt/task2/src/busybox-1.36.1/_install/bin/busybox"
 TARGET="/opt/task2/busybox-static"
-PORT=3321
-WWW_DIR="/opt/task2/www"
-mkdir -p "$WWW_DIR"
 
 if ! file "$BUSYBOX_BIN" | grep -q "ELF"; then
     echo "$BUSYBOX_BIN is not a valid ELF binary. Run compile.sh first."
@@ -27,6 +24,9 @@ done
 echo "Wrappers deployed."
 
 # --- httpd setup ---
+PORT=3321
+WWW_DIR="/opt/task2/www"
+mkdir -p "$WWW_DIR"
 cat > "$WWW_DIR/index.html" <<EOF
 I am alive $USER
 Date: $(date +%Y-%m-%d)
