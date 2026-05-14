@@ -1,0 +1,8 @@
+src/
+*.o
+*.a
+busybox
+busybox_unstripped
+.config
+_install/
+busybox-static

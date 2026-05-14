@@ -1,17 +1,23 @@
 #!/bin/bash
 set -e
 
-BUSYBOX_BIN="/opt/task2/src/busybox-1.36.1/busybox"
-TARGET="/bin/busybox-static"
+BUSYBOX_BIN="/opt/task2/src/busybox-1.36.1/_install/bin/busybox"
+TARGET="/opt/task2/busybox-static"
 
-# Copy binary
+if ! file "$BUSYBOX_BIN" | grep -q "ELF"; then
+	echo "$BUSYBOX_BIN is not a valid ELF binary. Run compile.sh first."
+	exit 1
+fi
+APPLETS=$("$BUSYBOX_BIN" --list)
+
 cp "$BUSYBOX_BIN" "$TARGET"
 chmod +x "$TARGET"
+echo "Deployed binary: $(file $TARGET)"
 
-# Create symlinks for every applet
-for cmd in $("$TARGET" --list); do
-    ln -sf "$TARGET" "/bin/bb-${cmd}"
-    echo "Linked: /bin/bb-${cmd}"
+for cmd in $APPLETS; do
+	[[ "$cmd" =~ ^[a-zA-Z0-9_-]+$ ]] || continue
+	printf '#!/bin/bash\nexec %s %s "$@"\n' "$TARGET" "$cmd" > "/bin/bb-${cmd}"
+	chmod +x "/bin/bb-${cmd}"
 done
 
 echo "Deploy complete."
